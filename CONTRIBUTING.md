@@ -90,13 +90,21 @@ in one of these sections: **Added**, **Changed**, **Deprecated**, **Removed**,
 
 ## Releasing (maintainers)
 
-1. Move the **[Unreleased]** entries to a new section `## [X.Y.Z] - YYYY-MM-DD`
-   and update the comparison links at the bottom of `CHANGELOG.md`.
-2. Bump `version` in `src/pysourceafis/_version.py`.
-3. Commit (`Release X.Y.Z`), tag (`git tag vX.Y.Z`) and push the tag. The
-   release workflow builds the wheel and source distribution, runs the tests
-   and publishes to PyPI through trusted publishing; the GitHub release text
-   is taken from the changelog section.
+One-time setup (GitHub repository, PyPI trusted publishing): see
+[docs/publishing.md](docs/publishing.md).
+
+```bash
+python tools/prepare_release.py 0.2.0     # dates the [Unreleased] notes, bumps the version
+git diff                                  # review CHANGELOG.md and _version.py
+git commit -am "Release 0.2.0"
+git tag v0.2.0
+git push origin main v0.2.0
+```
+
+Pushing the tag runs `.github/workflows/release.yml`: it checks that the tag,
+`_version.py` and `CHANGELOG.md` agree, builds the wheel and sdist, smoke-tests
+the wheel, publishes to PyPI and creates the GitHub release with the
+changelog section as release notes.
 
 ## Updating SourceAFIS
 
