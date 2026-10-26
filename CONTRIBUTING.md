@@ -16,18 +16,27 @@ permission before opening an issue or a pull request.
 
 ## Development setup
 
-You need **Python 3.10+** and **git**. A JDK (17+) is only needed if you change
-the Java bridge in `java/`; the build script otherwise downloads prebuilt jars.
+You need **Python 3.10+**, **git** and a **JDK 11 or newer** (for example
+[Eclipse Temurin](https://adoptium.net)) on `PATH` or in `JAVA_HOME`.
+
+The JDK is a contributor-only requirement: `tools/build_jars.py` uses `javac`
+to compile the Java bridge and `jdeps` to trim the bundled fastutil jar, and
+neither tool is part of the Java runtime that `jdk4py` installs for users.
+People who `pip install pysourceafis` do not need a JDK.
 
 ```bash
 git clone https://github.com/<your-fork>/pysourceafis.git
 cd pysourceafis
 python -m venv .venv
 # Windows:  .venv\Scripts\activate      Linux/macOS:  source .venv/bin/activate
-pip install -e ".[dev]"
-python tools/build_jars.py        # fetches SourceAFIS jars, compiles the bridge
+python tools/build_jars.py        # fetches + verifies SourceAFIS jars, compiles the bridge
+pip install -e ".[dev]"           # (also runs build_jars.py automatically if jars are missing)
 pytest
 ```
+
+Check your JDK with `javac -version` (must print 11 or higher). The first
+`build_jars.py` run downloads about 30 MB from Maven Central into `.jar-cache/`
+(or reuses `~/.m2` if you use Maven); later runs work offline.
 
 `python -m pysourceafis doctor` prints what pysourceafis detects on your machine
 (Python, Java, jars, engine version) and how to fix problems.
