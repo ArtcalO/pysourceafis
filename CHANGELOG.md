@@ -30,4 +30,8 @@ How to add an entry: see "Release notes" in [CONTRIBUTING.md](CONTRIBUTING.md).
 - Command line (`pysourceafis` or `python -m pysourceafis`): `doctor` checks
   Java, the engine and runs a self-test; `compare`, `extract`, `identify`
   (searches a folder of images and templates) and `version`, with `--json`.
+- `pysourceafis.readers` (Windows): list USB fingerprint readers and capture raw
+  images through the Windows Biometric Framework (`Reader().capture()` ->
+  `Capture.fingerprint()`); tested with the SecuGen Hamster Pro 20 / M2SYS HU20.
+  CLI: `pysourceafis readers` and `pysourceafis capture -o finger.png`.
 - Project structure, license, contribution guide and release notes.

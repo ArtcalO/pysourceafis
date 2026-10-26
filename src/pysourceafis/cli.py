@@ -154,6 +154,39 @@ def cmd_identify(args) -> int:
     return 0
 
 
+def cmd_readers(args) -> int:
+    from .readers import is_elevated, list_readers
+
+    readers = list_readers()
+    if not readers:
+        print("No fingerprint readers found.")
+        return 1
+    for r in readers:
+        print(f"  unit {r.unit_id:3d}  {r.manufacturer} {r.model} - {r.name} [{r.usb_id}]")
+    if not is_elevated():
+        print("Note: capturing raw images requires running as Administrator.")
+    return 0
+
+
+def cmd_capture(args) -> int:
+    from .readers import Reader
+
+    reader = Reader(unit_id=args.unit)
+    print(f"Place a finger on {reader.info.manufacturer} {reader.info.model} (timeout {args.timeout:.0f} s)...")
+    capture = reader.capture(timeout=args.timeout)
+    fp = capture.fingerprint()
+    print(f"Captured {capture.width}x{capture.height} px at {capture.dpi} dpi, {fp.minutiae_count} minutiae.")
+    if args.output:
+        capture.save(args.output)
+        print(f"Image saved to {args.output}")
+    if args.template:
+        Path(args.template).write_bytes(fp.to_bytes())
+        print(f"Template saved to {args.template}")
+    if args.output or args.template:
+        print("These files are biometric data: protect or delete them.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     from .fingerprint import DEFAULT_DPI, RECOMMENDED_THRESHOLD
 
@@ -189,6 +222,13 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--top-k", type=int, default=5)
     common(p, threshold=True)
     p.set_defaults(func=cmd_identify)
+    sub.add_parser("readers", help="list USB fingerprint readers (Windows)").set_defaults(func=cmd_readers)
+    p = sub.add_parser("capture", help="capture from a USB fingerprint reader (Windows, Administrator)")
+    p.add_argument("-o", "--output", help="save the image (e.g. finger.png)")
+    p.add_argument("-t", "--template", help="save the template")
+    p.add_argument("--unit", type=int, help="reader unit id from 'pysourceafis readers'")
+    p.add_argument("--timeout", type=float, default=20)
+    p.set_defaults(func=cmd_capture)
 
     args = ap.parse_args(argv)
     try:
