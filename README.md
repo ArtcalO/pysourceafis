@@ -35,6 +35,16 @@ for hit in gallery.search(probe, top_k=3):
     print(hit.key, hit.score)
 ```
 
+## Documentation
+
+* [Installation](docs/installation.md) - platforms, how Java is found, troubleshooting
+* [User guide](docs/guide.md) - matching, 1:N search, thresholds, storing templates
+* [Fingerprint readers](docs/readers.md) - capture from USB scanners (Windows)
+* [Command line](docs/cli.md) - `pysourceafis doctor`, `compare`, `identify`, `capture`...
+* [Examples](examples/README.md) - runnable scripts, including a FastAPI service
+
+Run `python -m pysourceafis doctor` after installing to check your setup.
+
 ## Contributing
 
 Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) to set up a

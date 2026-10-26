@@ -34,4 +34,6 @@ How to add an entry: see "Release notes" in [CONTRIBUTING.md](CONTRIBUTING.md).
   images through the Windows Biometric Framework (`Reader().capture()` ->
   `Capture.fingerprint()`); tested with the SecuGen Hamster Pro 20 / M2SYS HU20.
   CLI: `pysourceafis readers` and `pysourceafis capture -o finger.png`.
+- Documentation (installation, user guide, readers, CLI) and runnable examples,
+  including SQLite template storage and a FastAPI service.
 - Project structure, license, contribution guide and release notes.
