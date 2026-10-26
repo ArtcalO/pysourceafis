@@ -1,0 +1,8 @@
+# Byte-identical files on every platform; Windows users keep LF too.
+* text=auto eol=lf
+*.jar binary
+*.png binary
+*.bmp binary
+*.tif binary
+*.tiff binary
+*.jpg binary

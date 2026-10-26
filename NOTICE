@@ -1,0 +1,19 @@
+pysourceafis
+Copyright 2026 Carmel Niyungeko and pysourceafis contributors
+
+This product is licensed under the Apache License, Version 2.0.
+
+Binary distributions of this product bundle the following third-party
+components, each under its own license (see the jar files' META-INF):
+
+- SourceAFIS for Java (https://sourceafis.machinezoo.com/), Copyright Robert Važan,
+  Apache License 2.0
+- FingerprintIO, NoException, CloseableScope, Stagean (Robert Važan), Apache License 2.0
+- fastutil (https://fastutil.di.unimi.it/), Apache License 2.0
+- Jackson databind / core / annotations / dataformat-cbor (FasterXML), Apache License 2.0
+- Gson (Google), Apache License 2.0
+- Apache Commons IO, Apache License 2.0
+- JNBIS (https://github.com/mhshams/jnbis), Apache License 2.0
+- SLF4J API (https://www.slf4j.org/), MIT License
+
+pysourceafis is not affiliated with or endorsed by the SourceAFIS project.
