@@ -41,7 +41,7 @@ dependencies = [
 
 [project.optional-dependencies]
 testing = ["numpy>=1.23"]
-dev = ["numpy>=1.23", "pytest>=7.4", "ruff>=0.6", "build>=1.0"]
+dev = ["numpy>=1.23", "pytest>=7.4", "cbor2>=5.4", "ruff>=0.6", "build>=1.0"]
 
 [project.scripts]
 pysourceafis = "pysourceafis.cli:main"
