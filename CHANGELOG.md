@@ -12,6 +12,8 @@ How to add an entry: see "Release notes" in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-26
+
 ### Added
 
 - `Fingerprint`: extract a template from a file, encoded bytes, file object,
@@ -37,3 +39,6 @@ How to add an entry: see "Release notes" in [CONTRIBUTING.md](CONTRIBUTING.md).
 - Documentation (installation, user guide, readers, CLI) and runnable examples,
   including SQLite template storage and a FastAPI service.
 - Project structure, license, contribution guide and release notes.
+
+[Unreleased]: https://github.com/ArtcalO/pysourceafis/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ArtcalO/pysourceafis/releases/tag/v0.2.0
