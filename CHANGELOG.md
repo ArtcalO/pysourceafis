@@ -27,4 +27,7 @@ How to add an entry: see "Release notes" in [CONTRIBUTING.md](CONTRIBUTING.md).
   process uses pysourceafis after `fork()`.
 - Bundled SourceAFIS for Java 3.18.1 and its dependencies (no Maven needed).
 - `pysourceafis.testing`: synthetic fingerprint generator for tests and examples.
+- Command line (`pysourceafis` or `python -m pysourceafis`): `doctor` checks
+  Java, the engine and runs a self-test; `compare`, `extract`, `identify`
+  (searches a folder of images and templates) and `version`, with `--json`.
 - Project structure, license, contribution guide and release notes.
