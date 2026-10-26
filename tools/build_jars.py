@@ -140,9 +140,76 @@ def build_bridge(classpath: list[Path]) -> Path:
     return target
 
 
+SHRINK = {"fastutil"}  # libraries trimmed to the classes reachable from SourceAFIS and the bridge
+
+
+def shrunk_name(artifact: str, version: str) -> str:
+    return f"{artifact}-{version}-min.jar"
+
+
+def shrink(full_jar: Path, other_jars: list[Path]) -> Path:
+    """
+    Keep only the classes of ``full_jar`` that are transitively reachable from
+    ``other_jars`` (class-level dependency analysis with the JDK's jdeps tool).
+    fastutil is ~23 MB but SourceAFIS uses a small part of it; the test suite
+    exercises extraction, serialization and matching on the trimmed jar.
+    """
+    import re
+    import zipfile
+
+    jdeps = find_tool("jdeps")
+    edge = re.compile(r"^\s+(\S+)\s+->\s+(\S+)\s")
+    artifact, version = full_jar.stem.rsplit("-", 1)
+    target = OUT / shrunk_name(artifact, version)
+    target.unlink(missing_ok=True)  # an old trimmed copy would be a duplicate module for jdeps
+
+    def edges(targets: list[Path]) -> list[tuple[str, str]]:
+        # SourceAFIS is a named module, so jdeps must resolve modules: give it the jar folder.
+        result = subprocess.run([jdeps, "-verbose:class", "-filter:none", "--multi-release", "11", "--ignore-missing-deps",
+                                 "--module-path", str(full_jar.parent), *[str(t) for t in targets]],
+                                capture_output=True, text=True)
+        if result.returncode != 0:
+            raise SystemExit(f"jdeps failed:\n{result.stdout}\n{result.stderr}")
+        return [(m.group(1), m.group(2)) for m in map(edge.match, result.stdout.splitlines()) if m]
+
+    prefix = "it.unimi.dsi.fastutil."
+    roots = {dst for _, dst in edges(other_jars) if dst.startswith(prefix)}
+    graph: dict[str, set[str]] = {}
+    for src, dst in edges([full_jar]):
+        if dst.startswith(prefix):
+            graph.setdefault(src, set()).add(dst)
+    keep, stack = set(), list(roots)
+    while stack:
+        cls = stack.pop()
+        if cls in keep:
+            continue
+        keep.add(cls)
+        stack.extend(graph.get(cls, ()))
+    outers = {c.split("$")[0] for c in keep}
+
+    with zipfile.ZipFile(full_jar) as src, zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as dst:
+        for info in src.infolist():
+            name = info.filename
+            if name.endswith(".class"):
+                cls = name[:-6].replace("/", ".")
+                if cls.split("$")[0] not in outers:  # keep nested classes of kept classes
+                    continue
+            elif not (name.startswith("META-INF/") and not name.endswith((".SF", ".RSA", ".DSA"))):
+                continue
+            dst.writestr(info, src.read(name))
+    print(f"  {target.name:42s} {len(outers)} of the library's classes kept "
+          f"({target.stat().st_size / 1e6:.1f} MB instead of {full_jar.stat().st_size / 1e6:.1f} MB)")
+    return target
+
+
 def check() -> int:
     missing = []
     for group, artifact, version, expected in ARTIFACTS:
+        if artifact in SHRINK:
+            p = OUT / shrunk_name(artifact, version)
+            if not p.exists():
+                missing.append(p.name)
+            continue
         p = OUT / jar_name(artifact, version)
         if not p.exists() or sha256(p) != expected:
             missing.append(p.name)
@@ -164,11 +231,19 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     print(f"SourceAFIS {SOURCEAFIS_VERSION} and dependencies -> {OUT}")
     jars = [fetch(*a) for a in ARTIFACTS]
-    expected_names = {p.name for p in jars} | {BRIDGE_JAR}
+    bridge = build_bridge(jars)
+    final = set()
+    for (group, artifact, version, _), jar in zip(ARTIFACTS, jars):
+        if artifact in SHRINK:
+            others = [j for j in jars if j != jar] + [bridge]
+            final.add(shrink(jar, others).name)
+            jar.unlink()  # the verified full jar is kept in .jar-cache / ~/.m2, not shipped
+        else:
+            final.add(jar.name)
+    final.add(BRIDGE_JAR)
     for stale in OUT.glob("*.jar"):
-        if stale.name not in expected_names:
+        if stale.name not in final:
             stale.unlink()
-    build_bridge(jars)
     return check()
 
 
