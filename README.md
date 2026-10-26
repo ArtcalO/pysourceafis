@@ -1,6 +1,6 @@
 # pysourceafis
 
-**Fingerprint matching for Python, powered by [SourceAFIS](https://sourceafis.machinezoo.com/).**
+**Fingerprint matching for Python, powered by [K SQUAD](https://ksquad.dev) developped by Carmel NIYUNGEKO**
 
 `pysourceafis` brings the SourceAFIS fingerprint recognition engine to Python
 with a small, Pythonic API. It runs the official SourceAFIS for Java engine
