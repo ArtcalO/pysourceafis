@@ -14,6 +14,7 @@ Build the Java side of pysourceafis into src/pysourceafis/_jars/.
 Requires a JDK 11+ (javac + jar) on PATH or in JAVA_HOME. Only the standard
 library is used, so it runs before any dependency is installed.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -39,34 +40,60 @@ SOURCEAFIS_VERSION = "3.18.1"
 # com.machinezoo.sourceafis:sourceafis:3.18.1 (from its POM). Checksums were
 # computed from Maven Central artifacts whose SHA-1 matched Central's .sha1 files.
 ARTIFACTS = [
-    ("com.machinezoo.sourceafis", "sourceafis", SOURCEAFIS_VERSION,
-     "850582c842a7c7bf4ab87d8e8785674d9e092eb379a021d46bc053d2fc6028c0"),
-    ("com.machinezoo.fingerprintio", "fingerprintio", "1.3.1",
-     "2c2b1e3a35eb12317a75966e2b33e27d68d6b79e21120de8220f9fb20b20429c"),
-    ("com.machinezoo.noexception", "noexception", "1.9.1",
-     "29b002c8ccb17e73f06e2a237b083a38ca8e83cf833e0483c2366ff492965a8d"),
-    ("com.machinezoo.closeablescope", "closeablescope", "1.0.1",
-     "3e3554e56a831a68e168ee0e267b7e5ede9a9623c5814065888de49de0debfc8"),
-    ("com.machinezoo.stagean", "stagean", "1.3.0",
-     "19a77e39c6db01950c6caedc72323995f4be38368a16f72ffce5ea49ef3c7650"),
-    ("it.unimi.dsi", "fastutil", "8.5.12",
-     "b5543ee08d062d551cf0a5c9bc0fb70588b0382079029ba48941fa9c9be8a5d4"),
-    ("commons-io", "commons-io", "2.15.0",
-     "a328dad730921d197b6a9b195dffa00e41c974c2dac8fe37e84d31706bca7792"),
-    ("com.google.code.gson", "gson", "2.10.1",
-     "4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593"),
-    ("com.fasterxml.jackson.core", "jackson-databind", "2.15.3",
-     "c3c53333a2172a80678bda1803e39cff45bec6ae3e9c7d4f44a81ec4e2ab18dc"),
-    ("com.fasterxml.jackson.core", "jackson-core", "2.15.3",
-     "51fab7aad51ed588482edc507fd542747936c5094d1ab76ed21ddb63b96b610d"),
-    ("com.fasterxml.jackson.core", "jackson-annotations", "2.15.3",
-     "aae865c3d88256d61b11523cb1e88bd48d5b9ad5855fa1fc859504fd2204708a"),
-    ("com.fasterxml.jackson.dataformat", "jackson-dataformat-cbor", "2.15.3",
-     "b8c7ae4a9d82e3fd0aecfd4599f42eaf503d0faf99e2f97abfb8b2c33bc09da7"),
-    ("com.github.mhshams", "jnbis", "2.1.2",
-     "275046559dbfcf11adf0811fcc71646627f00964b8421029b2d1e8340b292fe5"),
-    ("org.slf4j", "slf4j-api", "2.0.9",
-     "0818930dc8d7debb403204611691da58e49d42c50b6ffcfdce02dadb7c3c2b6c"),
+    (
+        "com.machinezoo.sourceafis",
+        "sourceafis",
+        SOURCEAFIS_VERSION,
+        "850582c842a7c7bf4ab87d8e8785674d9e092eb379a021d46bc053d2fc6028c0",
+    ),
+    (
+        "com.machinezoo.fingerprintio",
+        "fingerprintio",
+        "1.3.1",
+        "2c2b1e3a35eb12317a75966e2b33e27d68d6b79e21120de8220f9fb20b20429c",
+    ),
+    (
+        "com.machinezoo.noexception",
+        "noexception",
+        "1.9.1",
+        "29b002c8ccb17e73f06e2a237b083a38ca8e83cf833e0483c2366ff492965a8d",
+    ),
+    (
+        "com.machinezoo.closeablescope",
+        "closeablescope",
+        "1.0.1",
+        "3e3554e56a831a68e168ee0e267b7e5ede9a9623c5814065888de49de0debfc8",
+    ),
+    ("com.machinezoo.stagean", "stagean", "1.3.0", "19a77e39c6db01950c6caedc72323995f4be38368a16f72ffce5ea49ef3c7650"),
+    ("it.unimi.dsi", "fastutil", "8.5.12", "b5543ee08d062d551cf0a5c9bc0fb70588b0382079029ba48941fa9c9be8a5d4"),
+    ("commons-io", "commons-io", "2.15.0", "a328dad730921d197b6a9b195dffa00e41c974c2dac8fe37e84d31706bca7792"),
+    ("com.google.code.gson", "gson", "2.10.1", "4241c14a7727c34feea6507ec801318a3d4a90f070e4525681079fb94ee4c593"),
+    (
+        "com.fasterxml.jackson.core",
+        "jackson-databind",
+        "2.15.3",
+        "c3c53333a2172a80678bda1803e39cff45bec6ae3e9c7d4f44a81ec4e2ab18dc",
+    ),
+    (
+        "com.fasterxml.jackson.core",
+        "jackson-core",
+        "2.15.3",
+        "51fab7aad51ed588482edc507fd542747936c5094d1ab76ed21ddb63b96b610d",
+    ),
+    (
+        "com.fasterxml.jackson.core",
+        "jackson-annotations",
+        "2.15.3",
+        "aae865c3d88256d61b11523cb1e88bd48d5b9ad5855fa1fc859504fd2204708a",
+    ),
+    (
+        "com.fasterxml.jackson.dataformat",
+        "jackson-dataformat-cbor",
+        "2.15.3",
+        "b8c7ae4a9d82e3fd0aecfd4599f42eaf503d0faf99e2f97abfb8b2c33bc09da7",
+    ),
+    ("com.github.mhshams", "jnbis", "2.1.2", "275046559dbfcf11adf0811fcc71646627f00964b8421029b2d1e8340b292fe5"),
+    ("org.slf4j", "slf4j-api", "2.0.9", "0818930dc8d7debb403204611691da58e49d42c50b6ffcfdce02dadb7c3c2b6c"),
 ]
 
 
@@ -120,8 +147,9 @@ def find_tool(name: str) -> str:
     found = shutil.which(name)
     if found:
         return found
-    raise SystemExit(f"'{name}' not found. Install a JDK 11+ (e.g. https://adoptium.net) and put it on PATH "
-                     "or set JAVA_HOME.")
+    raise SystemExit(
+        f"'{name}' not found. Install a JDK 11+ (e.g. https://adoptium.net) and put it on PATH or set JAVA_HOME."
+    )
 
 
 def build_bridge(classpath: list[Path]) -> Path:
@@ -131,8 +159,23 @@ def build_bridge(classpath: list[Path]) -> Path:
         classes = Path(tmp) / "classes"
         classes.mkdir()
         cp = os.pathsep.join(str(p) for p in classpath)
-        subprocess.run([javac, "--release", "11", "-Xlint:all", "-Werror", "-encoding", "UTF-8",
-                        "-cp", cp, "-d", str(classes), *sources], check=True)
+        subprocess.run(
+            [
+                javac,
+                "--release",
+                "11",
+                "-Xlint:all",
+                "-Werror",
+                "-encoding",
+                "UTF-8",
+                "-cp",
+                cp,
+                "-d",
+                str(classes),
+                *sources,
+            ],
+            check=True,
+        )
         target = OUT / BRIDGE_JAR
         target.unlink(missing_ok=True)
         subprocess.run([jar, "--create", "--file", str(target), "-C", str(classes), "."], check=True)
@@ -165,9 +208,21 @@ def shrink(full_jar: Path, other_jars: list[Path]) -> Path:
 
     def edges(targets: list[Path]) -> list[tuple[str, str]]:
         # SourceAFIS is a named module, so jdeps must resolve modules: give it the jar folder.
-        result = subprocess.run([jdeps, "-verbose:class", "-filter:none", "--multi-release", "11", "--ignore-missing-deps",
-                                 "--module-path", str(full_jar.parent), *[str(t) for t in targets]],
-                                capture_output=True, text=True)
+        result = subprocess.run(
+            [
+                jdeps,
+                "-verbose:class",
+                "-filter:none",
+                "--multi-release",
+                "11",
+                "--ignore-missing-deps",
+                "--module-path",
+                str(full_jar.parent),
+                *[str(t) for t in targets],
+            ],
+            capture_output=True,
+            text=True,
+        )
         if result.returncode != 0:
             raise SystemExit(f"jdeps failed:\n{result.stdout}\n{result.stderr}")
         return [(m.group(1), m.group(2)) for m in map(edge.match, result.stdout.splitlines()) if m]
@@ -197,14 +252,16 @@ def shrink(full_jar: Path, other_jars: list[Path]) -> Path:
             elif not (name.startswith("META-INF/") and not name.endswith((".SF", ".RSA", ".DSA"))):
                 continue
             dst.writestr(info, src.read(name))
-    print(f"  {target.name:42s} {len(outers)} of the library's classes kept "
-          f"({target.stat().st_size / 1e6:.1f} MB instead of {full_jar.stat().st_size / 1e6:.1f} MB)")
+    print(
+        f"  {target.name:42s} {len(outers)} of the library's classes kept "
+        f"({target.stat().st_size / 1e6:.1f} MB instead of {full_jar.stat().st_size / 1e6:.1f} MB)"
+    )
     return target
 
 
 def check() -> int:
     missing = []
-    for group, artifact, version, expected in ARTIFACTS:
+    for _group, artifact, version, expected in ARTIFACTS:
         if artifact in SHRINK:
             p = OUT / shrunk_name(artifact, version)
             if not p.exists():
@@ -233,7 +290,7 @@ def main() -> int:
     jars = [fetch(*a) for a in ARTIFACTS]
     bridge = build_bridge(jars)
     final = set()
-    for (group, artifact, version, _), jar in zip(ARTIFACTS, jars):
+    for (_group, artifact, _version, _), jar in zip(ARTIFACTS, jars, strict=False):
         if artifact in SHRINK:
             others = [j for j in jars if j != jar] + [bridge]
             final.add(shrink(jar, others).name)

@@ -9,6 +9,7 @@ fingerprints. Requires numpy (``pip install "pysourceafis[testing]"``).
     >>> png = synthetic_image(finger=7, impression=0)          # PNG bytes  # doctest: +SKIP
     >>> other = synthetic_image(finger=7, impression=1)        # same finger, new impression  # doctest: +SKIP
 """
+
 from __future__ import annotations
 
 from .synthetic import HEIGHT, WIDTH, SyntheticFinger, make_finger, render_impression
@@ -30,5 +31,12 @@ def synthetic_image(finger: int, impression: int = 0, variation: float = 1.0, fo
     return buf.getvalue()
 
 
-__all__ = ["HEIGHT", "WIDTH", "SyntheticFinger", "make_finger", "render_impression", "synthetic_array",
-           "synthetic_image"]
+__all__ = [
+    "HEIGHT",
+    "WIDTH",
+    "SyntheticFinger",
+    "make_finger",
+    "render_impression",
+    "synthetic_array",
+    "synthetic_image",
+]

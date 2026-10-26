@@ -23,8 +23,13 @@ def test_helpful_error_when_no_java(monkeypatch, tmp_path):
 
 
 def test_old_java_rejected(monkeypatch, tmp_path):
-    lib = tmp_path / ("bin/server/jvm.dll" if _java.sys.platform == "win32" else
-                      "lib/server/libjvm.dylib" if _java.sys.platform == "darwin" else "lib/server/libjvm.so")
+    lib = tmp_path / (
+        "bin/server/jvm.dll"
+        if _java.sys.platform == "win32"
+        else "lib/server/libjvm.dylib"
+        if _java.sys.platform == "darwin"
+        else "lib/server/libjvm.so"
+    )
     lib.parent.mkdir(parents=True)
     lib.write_bytes(b"")
     (tmp_path / "release").write_text('JAVA_VERSION="1.8.0_392"')

@@ -1,4 +1,5 @@
 """Hatchling build hook: make sure the jars exist before a wheel is built."""
+
 from __future__ import annotations
 
 import subprocess

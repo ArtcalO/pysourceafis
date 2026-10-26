@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install ruff
+      - run: ruff check .
+      - run: ruff format --check .
+
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # A JDK is needed to compile the bridge (javac) and trim fastutil (jdeps).
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Cache Maven Central jars
+        uses: actions/cache@v4
+        with:
+          path: .jar-cache
+          key: jars-${{ hashFiles('tools/build_jars.py') }}
+      - run: python tools/build_jars.py
+      - run: pip install -e ".[dev]"
+      - run: python -m pysourceafis doctor
+      - run: pytest
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: pip install build
+      - run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  # The promise of the project: `pip install pysourceafis` works without installing Java.
+  zero-java-install:
+    needs: build
+    name: wheel without system Java (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - name: Install the wheel (pulls jdk4py)
+        shell: bash
+        run: pip install "$(ls dist/*.whl)[testing]"
+      - name: Doctor must find Java through jdk4py
+        shell: bash
+        env:
+          JAVA_HOME: ""   # hide the runner's preinstalled Java
+        run: |
+          cd "$RUNNER_TEMP"
+          python -m pysourceafis doctor | tee doctor.txt
+          grep -q "from jdk4py" doctor.txt

@@ -9,6 +9,7 @@ Command line interface.
 
 Also available as ``python -m pysourceafis``.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -41,8 +42,9 @@ def cmd_doctor(args) -> int:
     def line(status: str, label: str, detail: str = "") -> None:
         print(f"  [{status:^4}] {label}" + (f": {detail}" if detail else ""))
 
-    print(f"pysourceafis {__version__} on Python {platform.python_version()} "
-          f"({platform.system()} {platform.machine()})")
+    print(
+        f"pysourceafis {__version__} on Python {platform.python_version()} ({platform.system()} {platform.machine()})"
+    )
     try:
         import jpype
 
@@ -81,8 +83,11 @@ def cmd_doctor(args) -> int:
         genuine, impostor = a.match(b), a.match(c)
         good = genuine > impostor
         ok &= good
-        line("ok" if good else "FAIL", "Self-test (synthetic images)",
-             f"same finger {genuine:.1f}, different fingers {impostor:.1f}")
+        line(
+            "ok" if good else "FAIL",
+            "Self-test (synthetic images)",
+            f"same finger {genuine:.1f}, different fingers {impostor:.1f}",
+        )
     except ImportError:
         line("skip", "Self-test", "needs numpy (pip install 'pysourceafis[testing]')")
     print("Everything looks good." if ok else "Some checks failed - see above.")
@@ -130,11 +135,19 @@ def cmd_identify(args) -> int:
         hits = gallery.search(probe, top_k=args.top_k)
         stats = gallery.last_search
     if args.json:
-        print(json.dumps({"threshold": args.threshold, "candidates": [
-            {"key": h.key, "score": h.score, "match": h.score >= args.threshold} for h in hits]}))
+        print(
+            json.dumps(
+                {
+                    "threshold": args.threshold,
+                    "candidates": [{"key": h.key, "score": h.score, "match": h.score >= args.threshold} for h in hits],
+                }
+            )
+        )
         return 0
-    print(f"Searched {stats.comparisons} fingerprints in {stats.milliseconds:.0f} ms"
-          + (f" ({skipped} skipped)" if skipped else ""))
+    print(
+        f"Searched {stats.comparisons} fingerprints in {stats.milliseconds:.0f} ms"
+        + (f" ({skipped} skipped)" if skipped else "")
+    )
     for rank, h in enumerate(hits, 1):
         mark = "MATCH" if h.score >= args.threshold else ""
         print(f"{rank:3d}. {h.score:8.2f}  {h.key}  {mark}")
@@ -150,8 +163,12 @@ def main(argv: list[str] | None = None) -> int:
     def common(p, threshold=False):
         p.add_argument("--dpi", type=float, default=DEFAULT_DPI, help="image resolution (default 500)")
         if threshold:
-            p.add_argument("--threshold", type=float, default=RECOMMENDED_THRESHOLD,
-                           help=f"match threshold (default {RECOMMENDED_THRESHOLD}; calibrate for your data)")
+            p.add_argument(
+                "--threshold",
+                type=float,
+                default=RECOMMENDED_THRESHOLD,
+                help=f"match threshold (default {RECOMMENDED_THRESHOLD}; calibrate for your data)",
+            )
             p.add_argument("--json", action="store_true", help="machine-readable output")
 
     sub.add_parser("doctor", help="check Java, the engine and run a self-test").set_defaults(func=cmd_doctor)

@@ -1,4 +1,5 @@
 """Exceptions raised by pysourceafis. Every message says what to do next."""
+
 from __future__ import annotations
 
 

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ArtcalO/pysourceafis/security/advisories/new
+    about: Report security problems privately, not in a public issue.
+  - name: SourceAFIS algorithm questions
+    url: https://sourceafis.machinezoo.com/
+    about: Questions about the matching algorithm itself belong to the SourceAFIS project.

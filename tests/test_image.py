@@ -46,10 +46,13 @@ def test_bad_array_shape():
         _image.from_array(np.zeros((4, 4, 4, 4), dtype=np.uint8))
 
 
-@pytest.mark.parametrize("data,match", [
-    (b"", "empty"),
-    (b"not an image" * 20, "Unrecognised"),
-])
+@pytest.mark.parametrize(
+    "data,match",
+    [
+        (b"", "empty"),
+        (b"not an image" * 20, "Unrecognised"),
+    ],
+)
 def test_garbage(data, match):
     with pytest.raises(ImageError, match=match):
         _image.from_bytes(data)

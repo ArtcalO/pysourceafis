@@ -1,4 +1,5 @@
 """Turning user input (paths, bytes, Pillow images, numpy arrays) into 8-bit grayscale pixels."""
+
 from __future__ import annotations
 
 import io
@@ -114,5 +115,7 @@ def load(source: Any) -> Gray:
         pass
     if hasattr(source, "__array__") or hasattr(source, "shape"):
         return from_array(source)
-    raise ImageError(f"Unsupported image input of type {type(source).__name__}; pass a path, bytes, "
-                     "a file object, a Pillow image or a numpy array.")
+    raise ImageError(
+        f"Unsupported image input of type {type(source).__name__}; pass a path, bytes, "
+        "a file object, a Pillow image or a numpy array."
+    )

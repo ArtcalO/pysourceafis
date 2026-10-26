@@ -10,6 +10,7 @@ Unofficial community wrapper around SourceAFIS for Java
 (https://sourceafis.machinezoo.com/). Scores are similarity scores, not
 probabilities.
 """
+
 from ._version import __version__
 from .errors import EngineError, ImageError, JavaNotFoundError, SourceAfisError, TemplateError
 from .fingerprint import DEFAULT_DPI, RECOMMENDED_THRESHOLD, Fingerprint, Matcher, engine_version

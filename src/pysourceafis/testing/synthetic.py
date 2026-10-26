@@ -22,9 +22,9 @@ with a random rotation, translation, small elastic warp, contrast change,
 noise and partial capture area, so two impressions of one synthetic finger
 behave like a genuine pair and different synthetic fingers like impostors.
 """
+
 from __future__ import annotations
 
-import io
 from dataclasses import dataclass
 
 import numpy as np
@@ -40,8 +40,8 @@ class SyntheticFinger:
     center: tuple[float, float]
     aspect: float
     linear: float
-    bend: np.ndarray        # (k, 4): amplitude, fx, fy, phase
-    minutiae: np.ndarray    # (n, 3): x, y, polarity (+1/-1)
+    bend: np.ndarray  # (k, 4): amplitude, fx, fy, phase
+    minutiae: np.ndarray  # (n, 3): x, y, polarity (+1/-1)
     mask_axes: tuple[float, float]
 
 
@@ -49,12 +49,14 @@ def make_finger(seed: int) -> SyntheticFinger:
     rng = np.random.default_rng(seed)
     cx = WIDTH / 2 + rng.uniform(-30, 30)
     cy = HEIGHT * rng.uniform(0.35, 0.55)
-    bend = np.column_stack([
-        rng.uniform(1.0, 4.0, 4),            # amplitude (radians)
-        rng.uniform(-1, 1, 4) / 180.0,       # spatial frequency x
-        rng.uniform(-1, 1, 4) / 180.0,       # spatial frequency y
-        rng.uniform(0, 2 * np.pi, 4),
-    ])
+    bend = np.column_stack(
+        [
+            rng.uniform(1.0, 4.0, 4),  # amplitude (radians)
+            rng.uniform(-1, 1, 4) / 180.0,  # spatial frequency x
+            rng.uniform(-1, 1, 4) / 180.0,  # spatial frequency y
+            rng.uniform(0, 2 * np.pi, 4),
+        ]
+    )
     n = int(rng.integers(35, 60))
     pts: list[tuple[float, float, float]] = []
     attempts = 0
@@ -64,7 +66,7 @@ def make_finger(seed: int) -> SyntheticFinger:
         y = rng.uniform(25, HEIGHT - 25)
         if ((x - WIDTH / 2) / (WIDTH * 0.46)) ** 2 + ((y - HEIGHT / 2) / (HEIGHT * 0.47)) ** 2 > 1:
             continue
-        if any((x - px) ** 2 + (y - py) ** 2 < 18 ** 2 for px, py, _ in pts):
+        if any((x - px) ** 2 + (y - py) ** 2 < 18**2 for px, py, _ in pts):
             continue
         pts.append((x, y, float(rng.choice([-1.0, 1.0]))))
     return SyntheticFinger(
@@ -80,8 +82,17 @@ def make_finger(seed: int) -> SyntheticFinger:
 
 def _box_blur(img: np.ndarray) -> np.ndarray:
     p = np.pad(img, 1, mode="edge")
-    return (p[:-2, :-2] + p[:-2, 1:-1] + p[:-2, 2:] + p[1:-1, :-2] + p[1:-1, 1:-1] + p[1:-1, 2:]
-            + p[2:, :-2] + p[2:, 1:-1] + p[2:, 2:]) / 9.0
+    return (
+        p[:-2, :-2]
+        + p[:-2, 1:-1]
+        + p[:-2, 2:]
+        + p[1:-1, :-2]
+        + p[1:-1, 1:-1]
+        + p[1:-1, 2:]
+        + p[2:, :-2]
+        + p[2:, 1:-1]
+        + p[2:, 2:]
+    ) / 9.0
 
 
 def render_impression(finger: SyntheticFinger, impression: int, variation: float = 1.0) -> np.ndarray:
@@ -124,7 +135,7 @@ def render_impression(finger: SyntheticFinger, impression: int, variation: float
     ridges = 0.5 + 0.5 * np.cos(psi)
     # Pressure / ridge thickness variation.
     gamma = rng.uniform(0.7, 1.4)
-    ridges = ridges ** gamma
+    ridges = ridges**gamma
 
     # Capture area: soft elliptical mask in finger coordinates, randomly shifted.
     ax, ay = finger.mask_axes
@@ -133,7 +144,7 @@ def render_impression(finger: SyntheticFinger, impression: int, variation: float
     mask = np.clip((1.0 - d) * 6.0, 0.0, 1.0)
 
     contrast = rng.uniform(0.65, 0.95)
-    img = 1.0 - contrast * ridges * mask          # 1 = white background, ridges dark
+    img = 1.0 - contrast * ridges * mask  # 1 = white background, ridges dark
     img = _box_blur(img)
     img += rng.normal(0, rng.uniform(0.02, 0.06), img.shape)
     return (np.clip(img, 0, 1) * 255).astype(np.uint8)

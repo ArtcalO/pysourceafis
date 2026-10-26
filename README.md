@@ -26,7 +26,7 @@ from pysourceafis import Fingerprint, Gallery
 
 probe = Fingerprint.from_file("probe.png")
 candidate = Fingerprint.from_file("candidate.png")
-print(probe.match(candidate))            # similarity score (not a probability)
+print(probe.match(candidate))  # similarity score (not a probability)
 
 gallery = Gallery()
 gallery.add("alice", Fingerprint.from_file("alice.png"))

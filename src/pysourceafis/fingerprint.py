@@ -1,4 +1,5 @@
 """Fingerprint templates and 1:1 matching."""
+
 from __future__ import annotations
 
 import os

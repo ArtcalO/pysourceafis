@@ -1,4 +1,5 @@
 """In-memory 1:N fingerprint search."""
+
 from __future__ import annotations
 
 import itertools
@@ -65,7 +66,8 @@ class Gallery:
         with self._lock:
             ids = [self._id_for(key) for key, _ in pairs]
             templates = jpype.JArray(jpype.JClass("com.machinezoo.sourceafis.FingerprintTemplate"))(
-                [fp._jt for _, fp in pairs])
+                [fp._jt for _, fp in pairs]
+            )
             self._j.putAll(jpype.JArray(jpype.JLong)(ids), templates)
 
     def add_templates(self, items: Iterable[tuple[Hashable, bytes]]) -> list[Hashable]:
@@ -148,7 +150,7 @@ class Gallery:
         result = self._j.search(probe._jt, int(top_k), float(min_score))
         self.last_search = SearchStats(int(result.comparisons), result.nanos / 1e6)
         out = []
-        for jid, score in zip(result.ids, result.scores):
+        for jid, score in zip(result.ids, result.scores, strict=False):
             jid = int(jid)
             if jid in self._id_to_key:  # skip entries removed while the search was running
                 out.append(Match(self._id_to_key[jid], float(score)))

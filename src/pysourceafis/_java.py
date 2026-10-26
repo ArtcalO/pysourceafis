@@ -20,6 +20,7 @@ Environment variables:
 * ``PYSOURCEAFIS_JAVA_HOME`` - Java installation to use
 * ``PYSOURCEAFIS_JVM_OPTIONS`` - extra JVM options, e.g. ``-Xmx4g``
 """
+
 from __future__ import annotations
 
 import glob
@@ -59,8 +60,7 @@ def _jvm_library(home: Path) -> Path | None:
     elif sys.platform == "darwin":
         names = ["lib/server/libjvm.dylib", "lib/libjli.dylib", "jre/lib/server/libjvm.dylib"]
     else:
-        names = ["lib/server/libjvm.so", "jre/lib/server/libjvm.so",
-                 f"lib/{platform.machine()}/server/libjvm.so"]
+        names = ["lib/server/libjvm.so", "jre/lib/server/libjvm.so", f"lib/{platform.machine()}/server/libjvm.so"]
     for name in names:
         candidate = home / name
         if candidate.exists():
@@ -106,10 +106,16 @@ def _candidates() -> list[tuple[str, Path]]:
         # .../bin/java -> installation directory (resolving symlinks such as /usr/bin/java)
         found.append(("PATH", Path(os.path.realpath(on_path)).parent.parent))
     patterns = {
-        "win32": [r"C:\Program Files\Eclipse Adoptium\*", r"C:\Program Files\Java\*",
-                  r"C:\Program Files\Microsoft\jdk-*", r"C:\Program Files\Zulu\*"],
-        "darwin": ["/Library/Java/JavaVirtualMachines/*/Contents/Home",
-                   "/opt/homebrew/opt/openjdk*/libexec/openjdk.jdk/Contents/Home"],
+        "win32": [
+            r"C:\Program Files\Eclipse Adoptium\*",
+            r"C:\Program Files\Java\*",
+            r"C:\Program Files\Microsoft\jdk-*",
+            r"C:\Program Files\Zulu\*",
+        ],
+        "darwin": [
+            "/Library/Java/JavaVirtualMachines/*/Contents/Home",
+            "/opt/homebrew/opt/openjdk*/libexec/openjdk.jdk/Contents/Home",
+        ],
     }.get(sys.platform, ["/usr/lib/jvm/*", "/usr/java/*", "/opt/java/*"])
     for pattern in patterns:
         for p in sorted(glob.glob(pattern), reverse=True):
@@ -171,8 +177,7 @@ def ensure_started():
         options = ["-Djava.awt.headless=true"]
         options += shlex.split(os.environ.get("PYSOURCEAFIS_JVM_OPTIONS", ""))
         try:
-            jpype.startJVM(str(java.jvm_library), *options, classpath=[str(j) for j in jars],
-                           convertStrings=True)
+            jpype.startJVM(str(java.jvm_library), *options, classpath=[str(j) for j in jars], convertStrings=True)
         except Exception as exc:
             raise EngineError(f"Could not start Java {java.version} from {java.home}: {exc}") from exc
         _silence_slf4j(jpype)
